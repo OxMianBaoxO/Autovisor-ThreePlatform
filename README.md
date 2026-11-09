@@ -2,6 +2,23 @@
 
 智慧树、学习通、Polymas 三平台课程浏览器工具。当前版本 **3.18.4+mixue.2**，基于 [CXRunfree/Autovisor](https://github.com/CXRunfree/Autovisor)。本仓库提供完整源码、测试、资源和操作说明；Windows 发布包提供可直接启动的程序。
 
+## 二次开发与许可
+
+本项目是在 **CXRunfree/Autovisor 基础上的三平台扩展和二次开发**，不是从零独立编写。维护者账号为 [OxMianBaoxO](https://github.com/OxMianBaoxO)，上游与第三方作者保留各自版权。
+
+以 `3.18.4+mixue.2` 与借鉴源码基线 `5c715623030877d1daac0eaa14ac91f0abb2d003` 对比，按核心 Python 功能代码的非空行统计：
+
+| 来源 | 非空行数 | 占当前核心 Python 代码 |
+| --- | ---: | ---: |
+| 原项目直接沿用 | 3,118 | 约 74% |
+| 本项目后续新增或改写 | 1,104 | 约 26% |
+
+统计范围为 `Autovisor.py`、`GUI.py` 与 `modules/*.py`；不含空行、测试、构建脚本、文档、字体表和第三方 JS 资源。注释行计入非空行，逐行文本匹配统计保留与变更，因此这是代码沿用比例，**不是严格的原创率或版权份额**。官方 `3.18.4` 标签与上述基线的差异仅涉及说明文档与图片，不影响这项 Python 统计。
+
+后续扩展主要包括学习通适配、Polymas 适配、三平台统一调度、蜜雪接入和打包发布；另外新增约 822 行非空测试代码。蜜雪及字体解码等部分引用或改编第三方成果，不能全部认定为本维护者独立原创，详见 [来源声明](NOTICE.md) 和 [第三方声明](resources/mixue/NOTICE.md)。
+
+**继续采用 MIT 许可证，允许商用、修改和再分发。分发软件副本或重要部分时，须保留相应版权及许可声明。** 上游许可证全文保留在 [LICENSE](LICENSE)，第三方组件依各自附带许可使用。
+
 ## 下载和使用
 
 1. 到 [Releases](https://github.com/OxMianBaoxO/Autovisor-ThreePlatform/releases) 下载 `Autovisor-3.18.4+mixue.2-Windows-x64.zip`。GitHub 的 `Source code` 下载仅含源码，没有 Windows 程序。

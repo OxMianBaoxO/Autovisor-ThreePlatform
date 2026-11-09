@@ -8,6 +8,12 @@
 `5c715623030877d1daac0eaa14ac91f0abb2d003`。保留原项目的配置文件和控制台入口，合并学习通、Polymas 适配。
 这是本地修改发行版，保留上游 MIT 许可证，不是作者官方发布。
 
+## 来源与许可
+
+这是基于 CXRunfree/Autovisor 的三平台扩展和二次开发。mixue.2 核心 Python 非空行中，约 74% 沿用原项目，约 26% 为后续新增或改写；该数字不是严格原创率，统计口径见 README。蜜雪和字体解码等内容另有第三方来源声明。
+
+继续采用 MIT，允许商用、修改和再分发；分发软件副本或重要部分时须保留相应版权和许可声明。详见 LICENSE、NOTICE.md 和 resources/mixue/NOTICE.md。
+
 ## 三步开始
 
 1. 将整个压缩包解压到可写文件夹，保留 `internal`、`resources`、`data`，不要只复制 exe。

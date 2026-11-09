@@ -76,7 +76,7 @@ def main():
 
     stage = job / release_name
     shutil.copytree(job / "dist/Autovisor", stage)
-    for rel in ("resources/QRcode.jpg", "resources/zhs.ico", "data/mirrors.json", "LICENSE"):
+    for rel in ("resources/QRcode.jpg", "resources/zhs.ico", "data/mirrors.json", "LICENSE", "NOTICE.md"):
         target = stage / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / rel, target)
@@ -105,7 +105,7 @@ def main():
 
     # Full project sources, selected by public code/resource paths, never a directory dump.
     source_files = [ROOT / name for name in (
-        "Autovisor.py", "GUI.py", "LICENSE", "README.md", "DISTRIBUTION.md", "POLYMAS_UPDATE.md",
+        "Autovisor.py", "GUI.py", "LICENSE", "NOTICE.md", "README.md", "DISTRIBUTION.md", "POLYMAS_UPDATE.md",
         "build.py", "package_release.py", "pyproject.toml", "uv.lock", ".python-version", ".gitignore",
         "run_macos.sh", "MIXUE_UPDATE.md", "config.ini.example", "config.macos.ini.example", "data/mirrors.json",
         "resources/QRcode.jpg", "resources/stealth.min.js", "resources/zhs.ico")]
