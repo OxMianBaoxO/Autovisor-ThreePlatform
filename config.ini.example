@@ -1,0 +1,61 @@
+; Autovisor 三平台合并版：智慧树 / 学习通 / Polymas
+; 完整解压后，填写最下方 URL1，保存，再运行 Autovisor.exe。
+; 留空账号密码时，在程序打开的浏览器中手动登录或扫码。
+
+[user-account]
+; 保留旧配置兼容字段。本模板请填写下方对应平台的专用账号段，或留空手动登录。
+username =
+password =
+
+[zhihuishu-account]
+; 智慧树专用账号，可留空。填写后将保存在本机配置文件中。
+username =
+password =
+
+[chaoxing-account]
+; 学习通专用账号，可留空；扫码登录不需要填写。
+username =
+password =
+
+[browser-option]
+; 可选 Edge 或 Chrome，三个平台均使用这个选项。
+driver = Edge
+; 通常留空；若自定义，请填写浏览器 exe 的完整路径，不加引号。
+EXE_PATH =
+
+[script-option]
+; 兼容旧配置保留这两个字段；本合并版始终由用户处理验证，并保持浏览器可见。
+enableAutoCaptcha = False
+enableHideWindow = False
+showDonateCode = False
+
+[course-option]
+; 每门课程运行时限（分钟），0 表示不限时。
+limitMaxTime = 0
+; 默认正常1倍速；学习通支持播放器原生1/1.25/1.5/1.75/2倍速。
+; 智慧树沿用原版0.5至1.8范围；Polymas保持1倍速。
+limitSpeed = 1.0
+soundOff = True
+
+[mixue-option]
+; 学习通蜜雪辅助。enabled=False 可关闭，旧配置没有本段时也不启用。
+enabled = True
+; 蜜雪题库 Key。可以留空，在浏览器面板临时输入（不写入网页或磁盘）。
+apiKey =
+; 题目及选项会发送至 https://tk.mixuelo.cc；接口可用性取决于第三方。
+useTiku = True
+useAI = False
+model = deepseek-chat
+; 自动查询并填入能明确匹配的答案；设 hintsOnly=True 则只显示答案。
+autoAnswer = True
+hintsOnly = False
+; 默认由你检查并提交；只在本页题目全部匹配时才允许自动提交。
+autoSubmit = False
+decrypt = True
+
+[course-url]
+; 从能看到视频和章节目录的实际课程学习页复制完整 HTTPS 地址。
+; 可以继续添加 URL2、URL3，按顺序逐门运行，不同时播放。
+URL1 =
+URL2 =
+URL3 =

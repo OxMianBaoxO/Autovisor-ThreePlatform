@@ -1,0 +1,32 @@
+# Private runtime data and machine-specific configuration
+config.ini
+config.macos.ini
+*.local.ini
+.env
+.env.*
+!.env.example
+data/*
+!data/mirrors.json
+logs/
+diagnostics/
+captcha/
+.autovisor/
+*profile*/
+cookies*.json
+*status.json
+*.log
+# Python/build/editor artifacts
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build*/
+dist*/
+packages/
+.idea/
+.vscode/
+.obsidian/
+*.spec
+# Downloads and generated releases belong in GitHub Releases
+*.zip
+*.exe
