@@ -46,10 +46,12 @@ apiKey =
 useTiku = True
 useAI = False
 model = deepseek-chat
-; 自动查询并填入能明确匹配的答案；设 hintsOnly=True 则只显示答案。
-autoAnswer = True
-hintsOnly = False
-; 默认由你检查并提交；只在本页题目全部匹配时才允许自动提交。
+; 默认使用“答案提示”：只展示查询结果，不点选、不填入、不提交。
+; 自动填答须手动设 autoAnswer=True 且 hintsOnly=False；可能填错并影响成绩。
+autoAnswer = False
+hintsOnly = True
+; 自动提交默认关闭；须另行手动开启，且自动填答已开启、答案提示已关闭。
+; 提交可能无法撤回，并可能违反学校或平台规则；请先阅读 DISCLAIMER.md。
 autoSubmit = False
 decrypt = True
 

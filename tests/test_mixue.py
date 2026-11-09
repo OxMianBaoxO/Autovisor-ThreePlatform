@@ -22,6 +22,15 @@ def configuration(**values):
 
 
 class MixueContractTests(unittest.IsolatedAsyncioTestCase):
+    def test_distribution_and_missing_config_default_to_hint_mode(self):
+        parser = configparser.ConfigParser()
+        parser.read(Path(__file__).resolve().parents[1] / 'config.ini.example', encoding='utf-8')
+        for config in (SimpleNamespace(_config=parser), SimpleNamespace(_config=configparser.ConfigParser())):
+            options = MixueOptions.from_config(config)
+            self.assertTrue(options.hints_only)
+            self.assertFalse(options.auto_answer)
+            self.assertFalse(options.auto_submit)
+
     async def test_tiku_contract_cache_and_no_redirect(self):
         client = MixueClient(MixueOptions(api_key="offline-key"))
         response = Mock(status_code=200, content=b'{}')
@@ -95,11 +104,42 @@ class MixueBrowserTests(unittest.IsolatedAsyncioTestCase):
         await page.goto(url)
         return context, page, client
 
+    async def test_default_manual_query_only_shows_hints(self):
+        parser = configparser.ConfigParser()
+        parser.read(Path(__file__).resolve().parents[1] / 'config.ini.example', encoding='utf-8')
+        parser.set('mixue-option', 'apiKey', 'OFFLINE_SECRET_KEY')
+        _, page, client = await self.open_fixture(SimpleNamespace(_config=parser))
+        with patch.object(client, '_post', return_value={"code":200,"data":{"answer":"北京"}}) as post:
+            await page.locator('#autovisor-mixue-panel').wait_for()
+            post.assert_not_called()
+            self.assertTrue(await page.get_by_label('答案提示', exact=True).is_checked())
+            self.assertFalse(await page.get_by_label('自动填答', exact=True).is_checked())
+            await page.get_by_role('button', name='查询本页参考答案', exact=True).click()
+            await page.wait_for_function("document.querySelector('#autovisor-mixue-panel').textContent.includes('北京')")
+            self.assertFalse(await page.locator('input[value=a]').is_checked())
+            self.assertEqual(await page.evaluate('window.submits||0'), 0)
+
+    async def test_fill_requires_explicit_switch_even_without_hint_mode(self):
+        _, page, client = await self.open_fixture(configuration(autoSubmit='True', hintsOnly='False'))
+        with patch.object(client, '_post', return_value={"code":200,"data":{"answer":"北京"}}):
+            await page.evaluate('window.__autovisorMixue.processQuestions()')
+            self.assertFalse(await page.locator('input[value=a]').is_checked())
+            self.assertEqual(await page.evaluate('window.submits||0'), 0)
+
+    async def test_opted_in_fill_still_does_not_submit_without_separate_opt_in(self):
+        _, page, client = await self.open_fixture(configuration())
+        with patch.object(client, '_post', return_value={"code":200,"data":{"answer":"北京"}}):
+            await page.get_by_label('自动填答', exact=True).check()
+            await page.evaluate('window.__autovisorMixue.processQuestions()')
+            self.assertTrue(await page.locator('input[value=a]').is_checked())
+            self.assertEqual(await page.evaluate('window.submits||0'), 0)
+
     async def test_real_panel_tiku_fill_and_submit(self):
         context, page, client = await self.open_fixture(configuration(autoSubmit='True'))
         with patch.object(client, '_post', return_value={"code":200,"data":{"answer":"北京"}}) as post:
             await page.locator('#autovisor-mixue-panel').wait_for()
-            await page.get_by_role('button',name='处理当前页题目',exact=True).click()
+            await page.get_by_label('自动填答', exact=True).check()
+            await page.get_by_role('button',name='查询本页参考答案',exact=True).click()
             await page.wait_for_function('window.submits === 1')
             self.assertTrue(await page.locator('input[value=a]').is_checked())
             self.assertFalse(await page.locator('input[value=b]').is_checked())
@@ -117,6 +157,7 @@ class MixueBrowserTests(unittest.IsolatedAsyncioTestCase):
         client.cache.clear()
         await page.evaluate('window.__autovisorMixue.settings.hintsOnly=false')
         with patch.object(client, '_post', return_value={"code":200,"data":{"answer":"I think A or B might work"}}):
+            await page.get_by_label('自动填答', exact=True).check()
             await page.evaluate('window.__autovisorMixue.processQuestions()')
             self.assertFalse(await page.locator('input[value=a]').is_checked())
             self.assertEqual(await page.evaluate('window.submits||0'),0)
@@ -143,6 +184,7 @@ class MixueBrowserTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(results,[[0,2],[0],[0,2],[],[],[]])
         await page.locator('form').evaluate('''form => {form.innerHTML='<div class="questionLi" typename="填空题"><h3 class="mark_name">两个空</h3><textarea></textarea><textarea></textarea></div>';}''')
         with patch.object(client,'_post',return_value={"code":200,"data":{"answer":"甲|乙"}}):
+            await page.get_by_label('自动填答', exact=True).check()
             await page.evaluate('window.__autovisorMixue.processQuestions()')
             self.assertEqual(await page.locator('textarea').evaluate_all('els=>els.map(e=>e.value)'),['甲','乙'])
 

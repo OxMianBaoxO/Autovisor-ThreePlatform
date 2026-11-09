@@ -138,11 +138,11 @@ async function processQuestions() {
       row.textContent = `${index+1}. ${result.error || '['+result.source+'] '+result.answer}`;
       answers.append(row);
       let applied = false;
-      if (!result.error && result.answer && !settings.hintsOnly) applied = fillQuestion(q, result.answer);
+      if (!result.error && result.answer && settings.autoAnswer && !settings.hintsOnly) applied = fillQuestion(q, result.answer);
       if (applied) filled++;
       results.push({q,applied});
     }
-    if (filled === questions.length && settings.autoSubmit && !settings.hintsOnly) {
+    if (filled === questions.length && settings.autoSubmit && settings.autoAnswer && !settings.hintsOnly) {
       // Submit only a form whose every recognized question was filled. Unknown
       // or ambiguous answers never trigger a force/confirm submission.
       for (const {q} of results) {
@@ -153,7 +153,7 @@ async function processQuestions() {
         if (buttons.length === 1) { buttons[0].click(); submittedForms.add(scope); }
       }
     }
-    log(settings.hintsOnly ? `已查询 ${questions.length} 题，仅显示答案` : `已匹配填入 ${filled}/${questions.length} 题` + (settings.autoSubmit ? '；提交仍以平台结果为准' : '；请检查后手动提交'));
+    log((settings.hintsOnly || !settings.autoAnswer) ? `已查询 ${questions.length} 题，仅显示答案` : `已匹配填入 ${filled}/${questions.length} 题` + (settings.autoSubmit ? '；提交仍以平台结果为准' : '；请检查后手动提交'));
   } catch (_) { log('查询失败或页面已切换，请重试'); }
   finally { state.busy = false; }
 }
@@ -166,20 +166,20 @@ function mount() {
   panel = document.createElement('aside'); panel.id = 'autovisor-mixue-panel';
   panel.style.cssText = 'position:fixed;right:12px;top:80px;width:290px;max-height:65vh;overflow:auto;z-index:2147483000;background:#fff;color:#222;padding:12px;border:1px solid #56cabf;border-radius:10px;box-shadow:0 4px 16px #0003;font:14px/1.5 "Microsoft YaHei",sans-serif;text-align:left';
   const title = document.createElement('strong'); title.textContent = 'Autovisor · 蜜雪助手（F9 显隐）'; panel.append(title);
-  const note = document.createElement('p'); note.textContent = '查询会将当前题目和选项发送至蜜雪题库。'; panel.append(note);
+  const note = document.createElement('p'); note.textContent = '默认使用答案提示。查询会向蜜雪发送题目和选项；自动填答和自动提交可能影响成绩及账号，请先确认学校和平台允许。'; panel.append(note);
   keyInput = document.createElement('input'); keyInput.type = 'password'; keyInput.placeholder = '题库 Key（仅本次运行）'; keyInput.style.width='95%'; panel.append(keyInput);
   const save = document.createElement('button'); save.textContent = '使用 Key'; save.onclick = async () => {
     const result = await window.__autovisorMixueCall('key',{key:keyInput.value});
     if (!result.error) { keyInput.value=''; state.lastSignature=''; }
     log(result.error || 'Key 已设定，可查询当前页面');
   }; panel.append(save);
-  for (const [field,label] of [['hintsOnly','仅显示答案'],['autoAnswer','自动查询填答'],['autoSubmit','全部匹配后提交']]) {
+  for (const [field,label] of [['hintsOnly','答案提示'],['autoAnswer','自动填答'],['autoSubmit','自动提交（默认关闭）']]) {
     const line=document.createElement('label'); line.style.display='block';
     const box=document.createElement('input'); box.type='checkbox'; box.checked=settings[field];
     box.onchange=()=>{settings[field]=box.checked;state.lastSignature='';};
     line.append(box,document.createTextNode(label)); panel.append(line);
   }
-  const run=document.createElement('button'); run.textContent='处理当前页题目'; run.onclick=processQuestions; panel.append(run);
+  const run=document.createElement('button'); run.textContent='查询本页参考答案'; run.onclick=processQuestions; panel.append(run);
   const notify=document.createElement('button'); notify.textContent='启用桌面通知'; notify.onclick=async()=>{
     if (!('Notification' in window)) return log('浏览器不支持通知');
     const permission=await Notification.requestPermission();
